@@ -13,7 +13,7 @@
 // See the License for the specific language governing permissions and
 // limitations under the License.
 
-package risk
+package com.natalinobusa.riskr
 
 import akka.actor.{ ActorSystem, Actor, Props }
 
@@ -22,11 +22,11 @@ case object Start
 object Main {
   def main(args: Array[String]): Unit = {
     val system = ActorSystem()
-    system.actorOf(Props[RiskActor]) ! Start
+    system.actorOf(Props[RiskrActor]) ! Start
   }
 }
 
-class RiskActor extends Actor {
+class RiskrActor extends Actor {
   val worldActor = context.actorOf(Props[WorldActor])
   def receive = {
     case Start ⇒ worldActor ! "risk"
