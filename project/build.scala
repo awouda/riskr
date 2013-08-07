@@ -55,7 +55,8 @@ object ShellPrompt {
 
 object Resolvers {
   val allResolvers = Seq (
-    "Typesafe Repository" at "http://repo.typesafe.com/typesafe/releases/"
+    "Typesafe Repository"     at "http://repo.typesafe.com/typesafe/releases/",
+    "Sonatype OSS Repository" at "https://oss.sonatype.org/content/groups/public/org/scalatest/"
   )
 }
 
@@ -63,7 +64,12 @@ object Dependencies {
   val akkaVersion       = "2.2.0"
 
   val allDependencies = Seq(
-    "com.typesafe.akka" %% "akka-actor" % akkaVersion
+    //akka
+    "com.typesafe.akka" %% "akka-actor"   % akkaVersion,
+    "com.typesafe.akka" %% "akka-testkit" % akkaVersion,
+    
+    //testing
+    "org.scalatest"     % "scalatest_2.10"    % "1.9.1" % "test"
   )
 }
 
