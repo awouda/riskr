@@ -55,6 +55,7 @@ object ShellPrompt {
 
 object Resolvers {
   val allResolvers = Seq (
+    "Spray Repository"        at "http://repo.spray.io",
     "Typesafe Repository"     at "http://repo.typesafe.com/typesafe/releases/",
     "Sonatype OSS Repository" at "https://oss.sonatype.org/content/groups/public/org/scalatest/"
   )
@@ -64,6 +65,9 @@ object Dependencies {
   val akkaVersion       = "2.2.0"
 
   val allDependencies = Seq(
+    //spray
+    "io.spray"           % "spray-can"    % "1.2-M8",
+
     //akka
     "com.typesafe.akka" %% "akka-actor"   % akkaVersion,
     "com.typesafe.akka" %% "akka-testkit" % akkaVersion,

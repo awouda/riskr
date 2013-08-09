@@ -1,5 +1,10 @@
 scalaVersion := "2.10.2"
 
-resolvers += "Typesafe Repository" at "http://repo.typesafe.com/typesafe/releases/"
+resolvers ++= Seq(
+	"Typesafe Repository" at "http://repo.typesafe.com/typesafe/releases/",
+	"Spray Repository"    at "http://repo.spray.io"
+)
 
 addSbtPlugin("com.typesafe.sbteclipse" %% "sbteclipse-plugin" % "2.3.0")
+
+addSbtPlugin("net.virtual-void" % "sbt-dependency-graph" % "0.7.4")

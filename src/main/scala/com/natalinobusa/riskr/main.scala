@@ -16,15 +16,21 @@
 package com.natalinobusa.riskr
 
 import akka.actor.{ ActorSystem, Actor, Props }
+import akka.io.IO
+import spray.can.Http
 
 case object Start
 case object TheQuestion
 
-object Main {
-  def main(args: Array[String]): Unit = {
-    val system = ActorSystem()
+object Boot extends App {
+val system = ActorSystem()
     system.actorOf(Props[RiskrActor]) ! Start
-  }
+    
+      // create and start our service actor
+  val service = system.actorOf(Props[DemoServiceActor], "demo-service")
+
+  // start a new HTTP server on port 8080 with our service actor as the handler
+  IO(Http) ! Http.Bind(service, "localhost", port = 8080)
 }
 
 class RiskrActor extends Actor {
@@ -46,4 +52,3 @@ class WorldActor extends Actor {
     case s: String ⇒ sender ! s.toUpperCase + ": time to conquer the world!"
   }
 }
-
