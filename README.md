@@ -8,9 +8,9 @@ Setup
 
 This use case has been setup using the following steps:
 
-  1) Install sbt 0.13, and sbteclipse 2.3.0
+  1) Install sbt 0.13
   
-  2) Find a set of compatible dependencies: scala 1.10 and akka 2.2.
+  2) Find a set of compatible dependencies: scala 1.10.2 and akka 2.2.0
 
 Branching
 ----
