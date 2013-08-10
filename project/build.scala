@@ -72,7 +72,7 @@ object Dependencies {
     "io.spray"           % "spray-io"      % sprayVersion,
     "io.spray"           % "spray-httpx"   % sprayVersion,
     "io.spray"           % "spray-routing" % sprayVersion,
-
+    
     //akka
     "com.typesafe.akka" %% "akka-actor"    % akkaVersion,
     "com.typesafe.akka" %% "akka-testkit"  % akkaVersion,
@@ -81,6 +81,8 @@ object Dependencies {
     "org.scalatest"     % "scalatest_2.10" % "1.9.1" % "test"
   )
 }
+
+import spray.revolver.RevolverPlugin._
 
 object DefaultBuild extends Build {
   import Resolvers._
@@ -92,7 +94,7 @@ object DefaultBuild extends Build {
   lazy val root = Project (
     id = appName,
     base = file ("."),
-    settings = buildSettings ++ Seq (resolvers ++= allResolvers, libraryDependencies ++= allDependencies)
+    settings = buildSettings ++ Seq (resolvers ++= allResolvers, libraryDependencies ++= allDependencies) ++ Revolver.settings
   ) 
 
 }

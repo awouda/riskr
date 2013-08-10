@@ -26,29 +26,12 @@ object Boot extends App {
   
   // create and start our service actor
   val service = system.actorOf(Props[DemoServiceActor], "demo-service")
+  
+  // add my own actors
+  val world   =  system.actorOf(Props[WorldActor])
 
   // start a new HTTP server on port 8080 with our service actor as the handler
   IO(Http) ! Http.Bind(service, "localhost", port = 8080)
 
-  // add my own actors
-  // system.actorOf(Props[RiskrActor]) ! Start
 }
 
-//class RiskrActor extends Actor {
-//  val worldActor = context.actorOf(Props[WorldActor])
-//  def receive = {
-//    case Start => worldActor ! "risk"
-//    case s: String =>
-//      println("Received message: %s".format(s))
-////      context.system.shutdown()
-//  }
-//}
-//
-class WorldActor extends Actor {
-  val theAnswer = 42
-
-  def receive = {
-    case TheQuestion => sender ! theAnswer
-    case s: String => sender ! s.toUpperCase + ": time to conquer the world!"
-  }
-}

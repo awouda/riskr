@@ -3,9 +3,9 @@ package com.natalinobusa.riskr
 import java.io.File
 import org.parboiled.common.FileUtils
 import scala.concurrent.duration._
-import akka.actor.{Props, Actor}
+import akka.actor.{ Props, Actor }
 import akka.pattern.ask
-import spray.routing.{HttpService, RequestContext}
+import spray.routing.{ HttpService, RequestContext }
 import spray.routing.directives.CachingDirectives
 import spray.can.server.Stats
 import spray.can.Http
@@ -15,7 +15,6 @@ import spray.util._
 import spray.http._
 import MediaTypes._
 import CachingDirectives._
-
 
 // we don't implement our route structure directly in the service actor because
 // we want to be able to test it independently, without having to spin up an actor
@@ -31,7 +30,6 @@ class DemoServiceActor extends Actor with DemoService {
   def receive = runRoute(demoRoute)
 }
 
-
 // this trait defines our service behavior independently from the service actor
 trait DemoService extends HttpService {
 
@@ -43,45 +41,48 @@ trait DemoService extends HttpService {
       path("") {
         complete(index)
       } ~
-      path("ping") {
-        complete("PONG!")
-      } ~
-      path("stream1") {
+        path("ping") {
+          complete("PONG!")
+        } ~
+        path("stream1") {
           complete(simpleStringStream)
-      } ~
-      path("stream2") {
-        sendStreamingResponse
-      } ~
-      path("stream-large-file") {
-        encodeResponse(Gzip) {
-          getFromFile(largeTempFile)
+        } ~
+        path("stream2") {
+          sendStreamingResponse
+        } ~
+        path("sse") {
+          sendServerSideEvents
+        } ~
+        path("stream-large-file") {
+          encodeResponse(Gzip) {
+            getFromFile(largeTempFile)
+          }
+        } ~
+        path("stats") {
+          complete {
+            actorRefFactory.actorSelection("/user/IO-HTTP/listener-0")
+              .ask(Http.GetStats)(1.second)
+              .mapTo[Stats]
+          }
+        } ~
+        path("timeout") { ctx =>
+          // we simply let the request drop to provoke a timeout
+        } ~
+        path("crash") { ctx =>
+          sys.error("crash boom bang")
+        } ~
+        path("fail") {
+          failWith(new RuntimeException("aaaahhh"))
         }
-      } ~
-      path("stats") {
-        complete {
-          actorRefFactory.actorSelection("/user/IO-HTTP/listener-0")
-            .ask(Http.GetStats)(1.second)
-            .mapTo[Stats]
-        }
-      } ~
-      path("timeout") { ctx =>
-        // we simply let the request drop to provoke a timeout
-      } ~
-      path("crash") { ctx =>
-        sys.error("crash boom bang")
-      } ~
-      path("fail") {
-        failWith(new RuntimeException("aaaahhh"))
-      }
     } ~
-    (post | parameter('method ! "post")) {
-      path("stop") {
-        complete {
-          in(1.second){ actorSystem.shutdown() }
-          "Shutting down in 1 second..."
+      (post | parameter('method ! "post")) {
+        path("stop") {
+          complete {
+            in(1.second) { actorSystem.shutdown() }
+            "Shutting down in 1 second..."
+          }
         }
       }
-    }
   }
 
   lazy val index =
@@ -93,6 +94,7 @@ trait DemoService extends HttpService {
           <li><a href="/ping">/ping</a></li>
           <li><a href="/stream1">/stream1</a> (via a Stream[T])</li>
           <li><a href="/stream2">/stream2</a> (manually)</li>
+          <li><a href="/sse">/sse</a> server side events (text/event-stream)</li>
           <li><a href="/stream-large-file">/stream-large-file</a></li>
           <li><a href="/stats">/stats</a></li>
           <li><a href="/timeout">/timeout</a></li>
@@ -147,6 +149,9 @@ trait DemoService extends HttpService {
         }
       }
     }
+
+  def sendServerSideEvents(ctx: RequestContext): Unit =
+    actorRefFactory.actorOf(Props(classOf[SourceActor],ctx))
 
   implicit val statsMarshaller: Marshaller[Stats] =
     Marshaller.delegate[Stats, String](ContentTypes.`text/plain`) { stats =>
