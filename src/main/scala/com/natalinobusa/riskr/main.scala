@@ -1,7 +1,6 @@
 // Copyright 2013, Natalino Busa 
 // http://www.linkedin.com/in/natalinobusa
 //
-// Licensed under the Apache License, Version 2.0 (the "License");
 // you may not use this file except in compliance with the License.
 // You may obtain a copy of the License at
 //
@@ -23,32 +22,33 @@ case object Start
 case object TheQuestion
 
 object Boot extends App {
-val system = ActorSystem()
-    system.actorOf(Props[RiskrActor]) ! Start
-    
-      // create and start our service actor
+  implicit val system = ActorSystem()
+  
+  // create and start our service actor
   val service = system.actorOf(Props[DemoServiceActor], "demo-service")
 
   // start a new HTTP server on port 8080 with our service actor as the handler
   IO(Http) ! Http.Bind(service, "localhost", port = 8080)
+
+  // add my own actors
+  // system.actorOf(Props[RiskrActor]) ! Start
 }
 
-class RiskrActor extends Actor {
-  val worldActor = context.actorOf(Props[WorldActor])
-  def receive = {
-    case Start ⇒ worldActor ! "risk"
-    case s: String ⇒
-      println("Received message: %s".format(s))
-      context.system.shutdown()
-  }
-}
-
+//class RiskrActor extends Actor {
+//  val worldActor = context.actorOf(Props[WorldActor])
+//  def receive = {
+//    case Start => worldActor ! "risk"
+//    case s: String =>
+//      println("Received message: %s".format(s))
+////      context.system.shutdown()
+//  }
+//}
+//
 class WorldActor extends Actor {
-
   val theAnswer = 42
 
   def receive = {
-    case TheQuestion ⇒ sender ! theAnswer
-    case s: String ⇒ sender ! s.toUpperCase + ": time to conquer the world!"
+    case TheQuestion => sender ! theAnswer
+    case s: String => sender ! s.toUpperCase + ": time to conquer the world!"
   }
 }

@@ -13,7 +13,7 @@ import akka.util.Timeout
 class WorldActorSpec extends FunSpec {
 
   implicit val system = ActorSystem("TestSys")
-  implicit val timeout = Timeout(1 seconds)
+  implicit val timeout = Timeout(1.seconds)
 
   val actorRef = TestActorRef[WorldActor]
   val actor = actorRef.underlyingActor
