@@ -36,7 +36,7 @@ trait DemoService extends HttpService {
   // we use the enclosing ActorContext's or ActorSystem's dispatcher for our Futures and Scheduler
   implicit def executionContext = actorRefFactory.dispatcher
 
- val rgbNumber = path("sse" / ".*".r )
+ val customerName = path("sse" / ".*".r )
 
   val demoRoute = {
     get {
@@ -52,7 +52,7 @@ trait DemoService extends HttpService {
         path("stream2") {
           sendStreamingResponse
         } ~
-        rgbNumber { customername => ctx =>
+        customername { customername => ctx =>
           actorRefFactory.actorOf(Props(classOf[SourceActor],ctx, customername))
         } ~
         path("stream-large-file") {
