@@ -38,6 +38,7 @@ class SourceActor(ctx: RequestContext, name:String) extends Actor with SprayActo
       
       // do something useful here
       val nextChunk = MessageChunk("data for "+name+" :" + DateTime.now.toIsoDateTimeString + "\n\n")
+
       ctx.responder ! nextChunk
       
     case ev: Http.ConnectionClosed =>

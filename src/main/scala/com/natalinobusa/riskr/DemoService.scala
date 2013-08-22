@@ -52,8 +52,11 @@ trait DemoService extends HttpService {
         path("stream2") {
           sendStreamingResponse
         } ~
-        customername { customername => ctx =>
+        customerName { customername => ctx =>
           actorRefFactory.actorOf(Props(classOf[SourceActor],ctx, customername))
+        }
+        path("sse") {
+          sendServerSideEvents
         } ~
         path("stream-large-file") {
           encodeResponse(Gzip) {
@@ -152,12 +155,8 @@ trait DemoService extends HttpService {
       }
     }
 
-  def sendServerSideEvents(ctx: RequestContext): Unit =  {
-  //  val c = actorRefFactory.actorOf(Props(classOf[Customer],"pipo"))
-  //  c ! "sww"
-
+   def sendServerSideEvents(ctx: RequestContext): Unit =
     actorRefFactory.actorOf(Props(classOf[SourceActor],ctx))
-}
 
   implicit val statsMarshaller: Marshaller[Stats] =
     Marshaller.delegate[Stats, String](ContentTypes.`text/plain`) { stats =>
