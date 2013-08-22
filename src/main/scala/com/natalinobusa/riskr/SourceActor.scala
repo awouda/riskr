@@ -11,7 +11,7 @@ import spray.util._
 
 import spray.routing.RequestContext
 
-class SourceActor(ctx: RequestContext) extends Actor with SprayActorLogging {
+class SourceActor(ctx: RequestContext, name:String) extends Actor with SprayActorLogging {
   import context._
 
   val `text/event-stream` = MediaType.custom("text/event-stream")
@@ -27,6 +27,8 @@ class SourceActor(ctx: RequestContext) extends Actor with SprayActorLogging {
   val responseStart = HttpResponse(entity = HttpEntity(`text/event-stream`, ":\n\n"))
     .withHeaders(List(`Cache-Control`(`no-cache`)))
 
+
+
   ctx.responder ! ChunkedResponseStart(responseStart)
 
   def receive = {
@@ -35,7 +37,7 @@ class SourceActor(ctx: RequestContext) extends Actor with SprayActorLogging {
       system.scheduler.scheduleOnce(1.second, self, "tick")
       
       // do something useful here
-      val nextChunk = MessageChunk("data:" + DateTime.now.toIsoDateTimeString + "\n\n")
+      val nextChunk = MessageChunk("data for "+name+" :" + DateTime.now.toIsoDateTimeString + "\n\n")
       ctx.responder ! nextChunk
       
     case ev: Http.ConnectionClosed =>

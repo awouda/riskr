@@ -36,6 +36,8 @@ trait DemoService extends HttpService {
   // we use the enclosing ActorContext's or ActorSystem's dispatcher for our Futures and Scheduler
   implicit def executionContext = actorRefFactory.dispatcher
 
+ val rgbNumber = path("sse" / ".*".r )
+
   val demoRoute = {
     get {
       path("") {
@@ -50,8 +52,8 @@ trait DemoService extends HttpService {
         path("stream2") {
           sendStreamingResponse
         } ~
-        path("sse") {
-          sendServerSideEvents
+        rgbNumber { customername => ctx =>
+          actorRefFactory.actorOf(Props(classOf[SourceActor],ctx, customername))
         } ~
         path("stream-large-file") {
           encodeResponse(Gzip) {
@@ -150,8 +152,12 @@ trait DemoService extends HttpService {
       }
     }
 
-  def sendServerSideEvents(ctx: RequestContext): Unit =
+  def sendServerSideEvents(ctx: RequestContext): Unit =  {
+  //  val c = actorRefFactory.actorOf(Props(classOf[Customer],"pipo"))
+  //  c ! "sww"
+
     actorRefFactory.actorOf(Props(classOf[SourceActor],ctx))
+}
 
   implicit val statsMarshaller: Marshaller[Stats] =
     Marshaller.delegate[Stats, String](ContentTypes.`text/plain`) { stats =>
