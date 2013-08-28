@@ -64,7 +64,7 @@ object Resolvers {
 
 object Dependencies {
   val akkaVersion       = "2.2.0"
-  val sprayVersion      = "1.2-20130801"
+  val sprayVersion      = "1.2-20130710"
 
   val allDependencies = Seq(
     //spray
@@ -72,7 +72,8 @@ object Dependencies {
     "io.spray"           % "spray-io"      % sprayVersion,
     "io.spray"           % "spray-httpx"   % sprayVersion,
     "io.spray"           % "spray-routing" % sprayVersion,
-    
+    "io.spray"           %% "spray-json" % "1.2.5",
+
     //akka
     "com.typesafe.akka" %% "akka-actor"    % akkaVersion,
     "com.typesafe.akka" %% "akka-testkit"  % akkaVersion,
